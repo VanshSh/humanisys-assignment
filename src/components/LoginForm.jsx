@@ -1,87 +1,56 @@
-import React, { memo, useCallback, useState } from 'react'
-import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap'
+import React, { memo, useState } from 'react'
+import { Button, Form } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
+import { useQuery } from '../context/QueryContext'
 
-const LoginForm = memo(({ onLogin }) => {
-  const [credentials, setCredentials] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+const LoginForm = memo(() => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const { login } = useQuery()
+  const navigate = useNavigate()
 
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault()
-      setError('')
-      setIsLoading(true)
-
-      // Simulate API call
-      setTimeout(() => {
-        if (
-          credentials.email === 'vansh' &&
-          credentials.password === '123456'
-        ) {
-          onLogin()
-        } else {
-          setError('Invalid credentials')
-        }
-        setIsLoading(false)
-      }, 1000)
-    },
-    [credentials, onLogin]
-  )
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (username === 'vansh' && password === '123456') {
+      login()
+      navigate('/dashboard')
+    }
+  }
 
   return (
-    <Card>
-      <Card.Body>
-        <Card.Title className='text-center mb-4'>Login</Card.Title>
-        {error && <Alert variant='danger'>{error}</Alert>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className='mb-3'>
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              type='text'
-              value={credentials.email}
-              onChange={(e) =>
-                setCredentials({ ...credentials, email: e.target.value })
-              }
-              disabled={isLoading}
-              required
-            />
-          </Form.Group>
-          <Form.Group className='mb-3'>
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type='password'
-              value={credentials.password}
-              onChange={(e) =>
-                setCredentials({ ...credentials, password: e.target.value })
-              }
-              disabled={isLoading}
-              required
-            />
-          </Form.Group>
-          <Button
-            type='submit'
-            variant='primary'
-            className='w-100'
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Spinner
-                  as='span'
-                  animation='border'
-                  size='sm'
-                  role='status'
-                  aria-hidden='true'
-                />
-                <span className='ms-2'>Logging in...</span>
-              </>
-            ) : (
-              'Login'
-            )}
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className='mb-3'>
+        <Form.Label>Username</Form.Label>
+        <Form.Control
+          type='text'
+          placeholder='Enter username'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group className='mb-3'>
+        <Form.Label>Password</Form.Label>
+        <Form.Control
+          type='password'
+          placeholder='Enter password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </Form.Group>
+
+      <Button variant='primary' type='submit'>
+        Login
+      </Button>
+
+      <div className='mt-3 text-muted'>
+        <small>Dummy credentials:</small>
+        <br />
+        <small>Username: vansh</small>
+        <br />
+        <small>Password: 123456</small>
+      </div>
+    </Form>
   )
 })
 
